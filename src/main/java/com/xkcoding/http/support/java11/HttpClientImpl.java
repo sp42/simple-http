@@ -16,11 +16,11 @@
 
 package com.xkcoding.http.support.java11;
 
-import com.xkcoding.http.config.HttpConfig;
-import com.xkcoding.http.constants.Constants;
-import com.xkcoding.http.support.AbstractHttp;
-import com.xkcoding.http.support.HttpHeader;
-import com.xkcoding.http.support.SimpleHttpResponse;
+import com.xkcoding.http.HttpConfig;
+import com.xkcoding.http.Constants;
+import com.xkcoding.http.AbstractHttp;
+import com.xkcoding.http.HttpHeader;
+import com.xkcoding.http.SimpleHttpResponse;
 import com.xkcoding.http.util.MapUtil;
 import com.xkcoding.http.util.StringUtil;
 

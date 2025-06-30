@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.constants;
+package com.xkcoding.http;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-/**
- * <p>
- * 常量池
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/24 19:39
- */
+
 public interface Constants {
 	/**
 	 * 超时时长，单位毫秒

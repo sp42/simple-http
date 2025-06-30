@@ -1,4 +1,4 @@
-package com.xkcoding.http.support;
+package com.xkcoding.http;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * 响应封装
- * </p>
- *
- * @author zhihai.yu
- * @date Created in 2021/09/10 20:24
  */
 @Data
 @NoArgsConstructor

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.support.httpclient;
+package com.xkcoding.http.support;
 
-import com.xkcoding.http.config.HttpConfig;
-import com.xkcoding.http.constants.Constants;
-import com.xkcoding.http.support.AbstractHttp;
-import com.xkcoding.http.support.HttpHeader;
-import com.xkcoding.http.support.SimpleHttpResponse;
+import com.xkcoding.http.HttpConfig;
+import com.xkcoding.http.Constants;
+import com.xkcoding.http.AbstractHttp;
+import com.xkcoding.http.HttpHeader;
+import com.xkcoding.http.SimpleHttpResponse;
 import com.xkcoding.http.util.MapUtil;
 import com.xkcoding.http.util.StringUtil;
 import org.apache.http.Header;
@@ -47,12 +47,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * <p>
  * HttpClient 实现
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/25 09:24
  */
 public class HttpClientImpl extends AbstractHttp {
 	private final CloseableHttpClient httpClient;
@@ -85,26 +80,26 @@ public class HttpClientImpl extends AbstractHttp {
 		request.setConfig(configBuilder.build());
 
 		try (CloseableHttpResponse response = this.httpClient.execute(request)) {
+			StringBuilder body = new StringBuilder();
 
-			StringBuffer body = new StringBuffer();
-			if (response.getEntity() != null) {
+			if (response.getEntity() != null)
 				body.append(EntityUtils.toString(response.getEntity(), Constants.DEFAULT_ENCODING));
-			}
 
 			int code = response.getStatusLine().getStatusCode();
 			boolean successful = isSuccess(response);
+
 			Map<String, List<String>> headers = Arrays.stream(response.getAllHeaders()).collect(Collectors.toMap(Header::getName, (value) -> {
 				ArrayList<String> headerValue = new ArrayList<>();
 				headerValue.add(value.getValue());
 				return headerValue;
 			}, (oldValue, newValue) -> newValue));
+
 			return new SimpleHttpResponse(successful, code, headers, body.toString(), null);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new SimpleHttpResponse(false, 500, null, null, e.getMessage());
 		}
 	}
-
 
 	/**
 	 * 添加request header
@@ -114,18 +109,18 @@ public class HttpClientImpl extends AbstractHttp {
 	private void addHeader(HttpRequestBase request) {
 		String ua = Constants.USER_AGENT;
 		Header[] headers = request.getHeaders(ua);
-		if (null == headers || headers.length == 0) {
+
+		if (null == headers || headers.length == 0)
 			request.addHeader(ua, Constants.USER_AGENT_DATA);
-		}
 	}
 
 	private boolean isSuccess(CloseableHttpResponse response) {
-		if (response == null) {
+		if (response == null)
 			return false;
-		}
-		if (response.getStatusLine() == null) {
+
+		if (response.getStatusLine() == null)
 			return false;
-		}
+
 		return response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 300;
 	}
 
@@ -169,9 +164,8 @@ public class HttpClientImpl extends AbstractHttp {
 
 		HttpGet httpGet = new HttpGet(url);
 
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), httpGet::addHeader);
-		}
 
 		return exec(httpGet);
 	}
@@ -185,7 +179,8 @@ public class HttpClientImpl extends AbstractHttp {
 	@Override
 	public SimpleHttpResponse post(String url) {
 		HttpPost httpPost = new HttpPost(url);
-		return this.exec(httpPost);
+
+		return exec(httpPost);
 	}
 
 	/**
@@ -197,7 +192,7 @@ public class HttpClientImpl extends AbstractHttp {
 	 */
 	@Override
 	public SimpleHttpResponse post(String url, String data) {
-		return this.post(url, data, null);
+		return post(url, data, null);
 	}
 
 	/**
@@ -219,11 +214,10 @@ public class HttpClientImpl extends AbstractHttp {
 			httpPost.setEntity(entity);
 		}
 
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), httpPost::addHeader);
-		}
 
-		return this.exec(httpPost);
+		return exec(httpPost);
 	}
 
 	/**
@@ -236,7 +230,7 @@ public class HttpClientImpl extends AbstractHttp {
 	 */
 	@Override
 	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
-		return this.post(url, params, null, encode);
+		return post(url, params, null, encode);
 	}
 
 	/**
@@ -258,10 +252,9 @@ public class HttpClientImpl extends AbstractHttp {
 			httpPost.setEntity(new UrlEncodedFormEntity(form, Constants.DEFAULT_ENCODING));
 		}
 
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), httpPost::addHeader);
-		}
 
-		return this.exec(httpPost);
+		return exec(httpPost);
 	}
 }

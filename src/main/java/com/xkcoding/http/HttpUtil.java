@@ -16,25 +16,16 @@
 
 package com.xkcoding.http;
 
-import com.xkcoding.http.config.HttpConfig;
-import com.xkcoding.http.constants.Constants;
-import com.xkcoding.http.exception.SimpleHttpException;
-import com.xkcoding.http.support.AbstractHttp;
-import com.xkcoding.http.support.Http;
-import com.xkcoding.http.support.HttpHeader;
-import com.xkcoding.http.support.SimpleHttpResponse;
+import com.xkcoding.http.support.HttpClientImpl;
+import com.xkcoding.http.support.HutoolImpl;
+import com.xkcoding.http.support.OkHttp3Impl;
 import com.xkcoding.http.util.ClassUtil;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
 
 /**
- * <p>
  * 请求工具类
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/24 18:15
  */
 @UtilityClass
 public class HttpUtil {
@@ -44,25 +35,23 @@ public class HttpUtil {
 		AbstractHttp defaultProxy = null;
 		ClassLoader classLoader = HttpUtil.class.getClassLoader();
 		// 基于 java 11 HttpClient
-		if (ClassUtil.isPresent("java.net.http.HttpClient", classLoader)) {
+		if (ClassUtil.isPresent("java.net.http.HttpClient", classLoader))
 			defaultProxy = getHttpProxy(com.xkcoding.http.support.java11.HttpClientImpl.class);
-		}
-		// 基于 okhttp3
-		if (null == defaultProxy && ClassUtil.isPresent("okhttp3.OkHttpClient", classLoader)) {
-			defaultProxy = getHttpProxy(com.xkcoding.http.support.okhttp3.OkHttp3Impl.class);
-		}
-		// 基于 httpclient
-		if (null == defaultProxy && ClassUtil.isPresent("org.apache.http.impl.client.HttpClients", classLoader)) {
-			defaultProxy = getHttpProxy(com.xkcoding.http.support.httpclient.HttpClientImpl.class);
-		}
-		// 基于 hutool
-		if (null == defaultProxy && ClassUtil.isPresent("cn.hutool.http.HttpRequest", classLoader)) {
-			defaultProxy = getHttpProxy(com.xkcoding.http.support.hutool.HutoolImpl.class);
-		}
 
-		if (defaultProxy == null) {
+		// 基于 okhttp3
+		if (null == defaultProxy && ClassUtil.isPresent("okhttp3.OkHttpClient", classLoader))
+			defaultProxy = getHttpProxy(OkHttp3Impl.class);
+
+		// 基于 httpclient
+		if (null == defaultProxy && ClassUtil.isPresent("org.apache.http.impl.client.HttpClients", classLoader))
+			defaultProxy = getHttpProxy(HttpClientImpl.class);
+
+		// 基于 hutool
+		if (null == defaultProxy && ClassUtil.isPresent("cn.hutool.http.HttpRequest", classLoader))
+			defaultProxy = getHttpProxy(HutoolImpl.class);
+
+		if (defaultProxy == null)
 			throw new SimpleHttpException("Has no HttpImpl defined in environment!");
-		}
 
 		proxy = defaultProxy;
 	}
@@ -80,16 +69,16 @@ public class HttpUtil {
 	}
 
 	private void checkHttpNotNull(Http proxy) {
-		if (null == proxy) {
+		if (null == proxy)
 			selectHttpProxy();
-		}
 	}
 
 	public void setConfig(HttpConfig httpConfig) {
 		checkHttpNotNull(proxy);
-		if (null == httpConfig) {
+
+		if (null == httpConfig)
 			httpConfig = HttpConfig.builder().timeout(Constants.DEFAULT_TIMEOUT).build();
-		}
+
 		proxy.setHttpConfig(httpConfig);
 	}
 

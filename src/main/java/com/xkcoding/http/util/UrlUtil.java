@@ -17,8 +17,8 @@
 package com.xkcoding.http.util;
 
 import cn.hutool.core.exceptions.UtilException;
-import com.xkcoding.http.constants.Constants;
-import com.xkcoding.http.exception.SimpleHttpException;
+import com.xkcoding.http.Constants;
+import com.xkcoding.http.SimpleHttpException;
 import lombok.experimental.UtilityClass;
 
 import java.io.UnsupportedEncodingException;

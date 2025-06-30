@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.support;
+package com.xkcoding.http;
 
 import java.util.Map;
 
 /**
- * <p>
  * HTTP 接口
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/24 18:21
  */
 public interface Http {
 	/**

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.support.okhttp3;
+package com.xkcoding.http.support;
 
-import com.xkcoding.http.config.HttpConfig;
-import com.xkcoding.http.constants.Constants;
-import com.xkcoding.http.support.AbstractHttp;
-import com.xkcoding.http.support.HttpHeader;
-import com.xkcoding.http.support.SimpleHttpResponse;
+import com.xkcoding.http.HttpConfig;
+import com.xkcoding.http.Constants;
+import com.xkcoding.http.AbstractHttp;
+import com.xkcoding.http.HttpHeader;
+import com.xkcoding.http.SimpleHttpResponse;
 import com.xkcoding.http.util.MapUtil;
 import com.xkcoding.http.util.StringUtil;
 import okhttp3.*;
@@ -67,12 +67,12 @@ public class OkHttp3Impl extends AbstractHttp {
 		}
 
 		try (Response response = httpClient.newCall(request).execute()) {
-
 			int code = response.code();
 			boolean successful = response.isSuccessful();
 			Map<String, List<String>> headers = response.headers().toMultimap();
 			ResponseBody responseBody = response.body();
 			String body = null == responseBody ? null : responseBody.string();
+
 			return new SimpleHttpResponse(successful, code, headers, body, null);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -125,17 +125,17 @@ public class OkHttp3Impl extends AbstractHttp {
 	@Override
 	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-		if (encode) {
+		if (encode)
 			MapUtil.forEach(params, urlBuilder::addEncodedQueryParameter);
-		} else {
+		 else
 			MapUtil.forEach(params, urlBuilder::addQueryParameter);
-		}
 		HttpUrl httpUrl = urlBuilder.build();
 
 		Request.Builder requestBuilder = new Request.Builder().url(httpUrl);
-		if (header != null) {
+
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), requestBuilder::addHeader);
-		}
+
 		requestBuilder = requestBuilder.get();
 
 		return exec(requestBuilder);
@@ -174,15 +174,15 @@ public class OkHttp3Impl extends AbstractHttp {
 	 */
 	@Override
 	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
-		if (StringUtil.isEmpty(data)) {
+		if (StringUtil.isEmpty(data))
 			data = Constants.EMPTY;
-		}
+
 		RequestBody body = RequestBody.create(data, CONTENT_TYPE_JSON);
 
 		Request.Builder requestBuilder = new Request.Builder().url(url);
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), requestBuilder::addHeader);
-		}
+
 		requestBuilder = requestBuilder.post(body);
 
 		return exec(requestBuilder);
@@ -213,17 +213,17 @@ public class OkHttp3Impl extends AbstractHttp {
 	@Override
 	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		FormBody.Builder formBuilder = new FormBody.Builder();
-		if (encode) {
+		if (encode)
 			MapUtil.forEach(params, formBuilder::addEncoded);
-		} else {
+		 else
 			MapUtil.forEach(params, formBuilder::add);
-		}
+
 		FormBody body = formBuilder.build();
 
 		Request.Builder requestBuilder = new Request.Builder().url(url);
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), requestBuilder::addHeader);
-		}
+
 		requestBuilder = requestBuilder.post(body);
 
 		return exec(requestBuilder);

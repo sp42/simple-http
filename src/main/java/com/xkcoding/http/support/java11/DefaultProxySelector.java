@@ -1,7 +1,7 @@
 package com.xkcoding.http.support.java11;
 
-import com.xkcoding.http.config.HttpConfig;
-import com.xkcoding.http.exception.SimpleHttpException;
+import com.xkcoding.http.HttpConfig;
+import com.xkcoding.http.SimpleHttpException;
 
 import java.io.IOException;
 import java.net.Proxy;

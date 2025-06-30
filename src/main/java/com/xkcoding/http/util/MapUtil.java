@@ -16,7 +16,7 @@
 
 package com.xkcoding.http.util;
 
-import com.xkcoding.http.constants.Constants;
+import com.xkcoding.http.Constants;
 import lombok.experimental.UtilityClass;
 
 import java.util.*;

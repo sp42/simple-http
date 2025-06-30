@@ -14,26 +14,36 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.exception;
+package com.xkcoding.http;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * <p>
- * 自定义异常
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/25 17:40
+ * 请求头封装
  */
-public class SimpleHttpException extends RuntimeException {
-	public SimpleHttpException(Throwable cause) {
-		super(cause);
+public class HttpHeader {
+	private final Map<String, String> headers;
+
+	public HttpHeader() {
+		headers = new HashMap<>(16);
 	}
 
-	public SimpleHttpException(String message) {
-		super(message);
+	public HttpHeader(Map<String, String> headers) {
+		this.headers = headers;
 	}
 
-	public SimpleHttpException(String message, Throwable cause) {
-		super(message, cause);
+	public HttpHeader add(String key, String value) {
+		this.headers.put(key, value);
+		return this;
+	}
+
+	public HttpHeader addAll(Map<String, String> headers) {
+		this.headers.putAll(headers);
+		return this;
+	}
+
+	public Map<String, String> getHeaders() {
+		return this.headers;
 	}
 }

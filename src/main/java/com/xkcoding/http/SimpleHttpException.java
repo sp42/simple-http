@@ -14,41 +14,18 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.support;
+package com.xkcoding.http;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * <p>
- * 请求头封装
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/24 18:24
- */
-public class HttpHeader {
-	private final Map<String, String> headers;
-
-	public HttpHeader() {
-		this.headers = new HashMap<>(16);
+public class SimpleHttpException extends RuntimeException {
+	public SimpleHttpException(Throwable cause) {
+		super(cause);
 	}
 
-	public HttpHeader(Map<String, String> headers) {
-		this.headers = headers;
+	public SimpleHttpException(String message) {
+		super(message);
 	}
 
-	public HttpHeader add(String key, String value) {
-		this.headers.put(key, value);
-		return this;
-	}
-
-	public HttpHeader addAll(Map<String, String> headers) {
-		this.headers.putAll(headers);
-		return this;
-	}
-
-	public Map<String, String> getHeaders() {
-		return this.headers;
+	public SimpleHttpException(String message, Throwable cause) {
+		super(message, cause);
 	}
 }
