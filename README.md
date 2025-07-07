@@ -9,6 +9,8 @@
 
 ## 简介
 
+https://xkcoding.com/2019/12/26/xkcoding-simple-http.html
+
 > 抽取一个简单 HTTP 的通用接口，底层实现根据具体引入依赖指定。
 
 ```xml
