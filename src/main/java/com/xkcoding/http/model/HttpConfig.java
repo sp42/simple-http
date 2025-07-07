@@ -1,4 +1,4 @@
-package com.xkcoding.http;
+package com.xkcoding.http.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

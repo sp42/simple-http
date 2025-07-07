@@ -16,13 +16,13 @@
 
 package com.xkcoding.http.support;
 
-import com.xkcoding.http.HttpConfig;
-import com.xkcoding.http.Constants;
-import com.xkcoding.http.AbstractHttp;
-import com.xkcoding.http.HttpHeader;
-import com.xkcoding.http.SimpleHttpResponse;
-import com.xkcoding.http.util.MapUtil;
-import com.xkcoding.http.util.StringUtil;
+import com.ajaxjs.http.util.HttpUtils;
+import com.xkcoding.http.*;
+import com.xkcoding.http.model.Constants;
+import com.xkcoding.http.model.HttpConfig;
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
+import com.ajaxjs.http.util.MapUtil;
 import okhttp3.*;
 
 import java.time.Duration;
@@ -54,17 +54,16 @@ public class OkHttp3Impl extends AbstractHttp {
 		this.httpClientBuilder = httpClientBuilder;
 	}
 
-	private SimpleHttpResponse exec(Request.Builder requestBuilder) {
-		this.addHeader(requestBuilder);
+	private HttpResponseRawResult exec(Request.Builder requestBuilder) {
+		addHeader(requestBuilder);
 		Request request = requestBuilder.build();
 
 		OkHttpClient httpClient;
 		// 设置代理
-		if (null != httpConfig.getProxy()) {
+		if (null != httpConfig.getProxy())
 			httpClient = httpClientBuilder.connectTimeout(Duration.ofMillis(httpConfig.getTimeout())).writeTimeout(Duration.ofMillis(httpConfig.getTimeout())).readTimeout(Duration.ofMillis(httpConfig.getTimeout())).proxy(httpConfig.getProxy()).build();
-		} else {
+		 else
 			httpClient = httpClientBuilder.connectTimeout(Duration.ofMillis(httpConfig.getTimeout())).writeTimeout(Duration.ofMillis(httpConfig.getTimeout())).readTimeout(Duration.ofMillis(httpConfig.getTimeout())).build();
-		}
 
 		try (Response response = httpClient.newCall(request).execute()) {
 			int code = response.code();
@@ -73,10 +72,10 @@ public class OkHttp3Impl extends AbstractHttp {
 			ResponseBody responseBody = response.body();
 			String body = null == responseBody ? null : responseBody.string();
 
-			return new SimpleHttpResponse(successful, code, headers, body, null);
+			return new HttpResponseRawResult(successful, code, headers, body, null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new SimpleHttpResponse(false, 500, null, null, e.getMessage());
+			return new HttpResponseRawResult(false, 500, null, null, e.getMessage());
 		}
 	}
 
@@ -96,8 +95,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url) {
-		return this.get(url, null, false);
+	public HttpResponseRawResult get(String url) {
+		return get(url, null, false);
 	}
 
 	/**
@@ -109,8 +108,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, boolean encode) {
-		return this.get(url, params, null, encode);
+	public HttpResponseRawResult get(String url, Map<String, String> params, boolean encode) {
+		return get(url, params, null, encode);
 	}
 
 	/**
@@ -123,11 +122,11 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
 		if (encode)
 			MapUtil.forEach(params, urlBuilder::addEncodedQueryParameter);
-		 else
+		else
 			MapUtil.forEach(params, urlBuilder::addQueryParameter);
 		HttpUrl httpUrl = urlBuilder.build();
 
@@ -148,8 +147,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url) {
-		return this.post(url, Constants.EMPTY);
+	public HttpResponseRawResult post(String url) {
+		return post(url, Constants.EMPTY);
 	}
 
 	/**
@@ -160,8 +159,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data) {
-		return this.post(url, data, null);
+	public HttpResponseRawResult post(String url, String data) {
+		return post(url, data, null);
 	}
 
 	/**
@@ -173,8 +172,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
-		if (StringUtil.isEmpty(data))
+	public HttpResponseRawResult post(String url, String data, HttpHeader header) {
+		if (HttpUtils.isEmpty(data))
 			data = Constants.EMPTY;
 
 		RequestBody body = RequestBody.create(data, CONTENT_TYPE_JSON);
@@ -197,8 +196,8 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
-		return this.post(url, params, null, encode);
+	public HttpResponseRawResult post(String url, Map<String, String> params, boolean encode) {
+		return post(url, params, null, encode);
 	}
 
 	/**
@@ -211,11 +210,11 @@ public class OkHttp3Impl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		FormBody.Builder formBuilder = new FormBody.Builder();
 		if (encode)
 			MapUtil.forEach(params, formBuilder::addEncoded);
-		 else
+		else
 			MapUtil.forEach(params, formBuilder::add);
 
 		FormBody body = formBuilder.build();

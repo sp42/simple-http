@@ -16,10 +16,13 @@
 
 package com.xkcoding.http;
 
+import com.xkcoding.http.model.Constants;
+import com.xkcoding.http.model.HttpConfig;
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
 import com.xkcoding.http.support.HttpClientImpl;
 import com.xkcoding.http.support.HutoolImpl;
 import com.xkcoding.http.support.OkHttp3Impl;
-import com.xkcoding.http.util.ClassUtil;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
@@ -28,32 +31,49 @@ import java.util.Map;
  * 请求工具类
  */
 @UtilityClass
-public class HttpUtil {
+public class HttpRawHandler {
 	private static AbstractHttp proxy;
 
 	private void selectHttpProxy() {
 		AbstractHttp defaultProxy = null;
-		ClassLoader classLoader = HttpUtil.class.getClassLoader();
+		ClassLoader classLoader = HttpRawHandler.class.getClassLoader();
+
 		// 基于 java 11 HttpClient
-		if (ClassUtil.isPresent("java.net.http.HttpClient", classLoader))
+		if (isClassPresent("java.net.http.HttpClient", classLoader))
 			defaultProxy = getHttpProxy(com.xkcoding.http.support.java11.HttpClientImpl.class);
 
 		// 基于 okhttp3
-		if (null == defaultProxy && ClassUtil.isPresent("okhttp3.OkHttpClient", classLoader))
+		if (null == defaultProxy && isClassPresent("okhttp3.OkHttpClient", classLoader))
 			defaultProxy = getHttpProxy(OkHttp3Impl.class);
 
 		// 基于 httpclient
-		if (null == defaultProxy && ClassUtil.isPresent("org.apache.http.impl.client.HttpClients", classLoader))
+		if (null == defaultProxy && isClassPresent("org.apache.http.impl.client.HttpClients", classLoader))
 			defaultProxy = getHttpProxy(HttpClientImpl.class);
 
 		// 基于 hutool
-		if (null == defaultProxy && ClassUtil.isPresent("cn.hutool.http.HttpRequest", classLoader))
+		if (null == defaultProxy && isClassPresent("cn.hutool.http.HttpRequest", classLoader))
 			defaultProxy = getHttpProxy(HutoolImpl.class);
 
 		if (defaultProxy == null)
 			throw new SimpleHttpException("Has no HttpImpl defined in environment!");
 
 		proxy = defaultProxy;
+	}
+
+	/**
+	 * 确定class是否可以被加载
+	 *
+	 * @param className   完整类名
+	 * @param classLoader 类加载
+	 * @return {boolean}
+	 */
+	public static boolean isClassPresent(String className, ClassLoader classLoader) {
+		try {
+			Class.forName(className, true, classLoader);
+			return true;
+		} catch (Throwable ex) {
+			return false;
+		}
 	}
 
 	private static <T extends AbstractHttp> AbstractHttp getHttpProxy(Class<T> clazz) {
@@ -88,7 +108,7 @@ public class HttpUtil {
 	 * @param url URL
 	 * @return 结果
 	 */
-	public SimpleHttpResponse get(String url) {
+	public HttpResponseRawResult get(String url) {
 		checkHttpNotNull(proxy);
 		return proxy.get(url);
 	}
@@ -101,7 +121,7 @@ public class HttpUtil {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	public SimpleHttpResponse get(String url, Map<String, String> params, boolean encode) {
+	public HttpResponseRawResult get(String url, Map<String, String> params, boolean encode) {
 		checkHttpNotNull(proxy);
 		return proxy.get(url, params, encode);
 	}
@@ -115,7 +135,7 @@ public class HttpUtil {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		checkHttpNotNull(proxy);
 		return proxy.get(url, params, header, encode);
 	}
@@ -126,7 +146,7 @@ public class HttpUtil {
 	 * @param url URL
 	 * @return 结果
 	 */
-	public SimpleHttpResponse post(String url) {
+	public HttpResponseRawResult post(String url) {
 		checkHttpNotNull(proxy);
 		return proxy.post(url);
 	}
@@ -138,7 +158,7 @@ public class HttpUtil {
 	 * @param data JSON 参数
 	 * @return 结果
 	 */
-	public SimpleHttpResponse post(String url, String data) {
+	public HttpResponseRawResult post(String url, String data) {
 		checkHttpNotNull(proxy);
 		return proxy.post(url, data);
 	}
@@ -151,7 +171,7 @@ public class HttpUtil {
 	 * @param header 请求头
 	 * @return 结果
 	 */
-	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
+	public HttpResponseRawResult post(String url, String data, HttpHeader header) {
 		checkHttpNotNull(proxy);
 		return proxy.post(url, data, header);
 	}
@@ -164,7 +184,7 @@ public class HttpUtil {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, boolean encode) {
 		checkHttpNotNull(proxy);
 		return proxy.post(url, params, encode);
 	}
@@ -178,7 +198,7 @@ public class HttpUtil {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		checkHttpNotNull(proxy);
 		return proxy.post(url, params, header, encode);
 	}

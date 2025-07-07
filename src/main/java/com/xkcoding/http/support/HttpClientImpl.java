@@ -16,13 +16,13 @@
 
 package com.xkcoding.http.support;
 
-import com.xkcoding.http.HttpConfig;
-import com.xkcoding.http.Constants;
-import com.xkcoding.http.AbstractHttp;
-import com.xkcoding.http.HttpHeader;
-import com.xkcoding.http.SimpleHttpResponse;
-import com.xkcoding.http.util.MapUtil;
-import com.xkcoding.http.util.StringUtil;
+import com.ajaxjs.http.util.HttpUtils;
+import com.xkcoding.http.*;
+import com.xkcoding.http.model.Constants;
+import com.xkcoding.http.model.HttpConfig;
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
+import com.ajaxjs.http.util.MapUtil;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
@@ -65,8 +65,8 @@ public class HttpClientImpl extends AbstractHttp {
 		this.httpClient = httpClient;
 	}
 
-	private SimpleHttpResponse exec(HttpRequestBase request) {
-		this.addHeader(request);
+	private HttpResponseRawResult exec(HttpRequestBase request) {
+		addHeader(request);
 		// 设置超时时长
 		RequestConfig.Builder configBuilder = RequestConfig.custom().setConnectTimeout(httpConfig.getTimeout()).setSocketTimeout(httpConfig.getTimeout()).setConnectionRequestTimeout(httpConfig.getTimeout());
 		// 设置代理
@@ -94,10 +94,10 @@ public class HttpClientImpl extends AbstractHttp {
 				return headerValue;
 			}, (oldValue, newValue) -> newValue));
 
-			return new SimpleHttpResponse(successful, code, headers, body.toString(), null);
+			return new HttpResponseRawResult(successful, code, headers, body.toString(), null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new SimpleHttpResponse(false, 500, null, null, e.getMessage());
+			return new HttpResponseRawResult(false, 500, null, null, e.getMessage());
 		}
 	}
 
@@ -131,8 +131,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url) {
-		return this.get(url, null, false);
+	public HttpResponseRawResult get(String url) {
+		return get(url, null, false);
 	}
 
 	/**
@@ -144,8 +144,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, boolean encode) {
-		return this.get(url, params, null, encode);
+	public HttpResponseRawResult get(String url, Map<String, String> params, boolean encode) {
+		return get(url, params, null, encode);
 	}
 
 	/**
@@ -158,10 +158,9 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
-		String baseUrl = StringUtil.appendIfNotContain(url, "?", "&");
+	public HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+		String baseUrl = HttpUtils.appendIfNotContain(url, "?", "&");
 		url = baseUrl + MapUtil.parseMapToString(params, encode);
-
 		HttpGet httpGet = new HttpGet(url);
 
 		if (header != null)
@@ -177,10 +176,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url) {
-		HttpPost httpPost = new HttpPost(url);
-
-		return exec(httpPost);
+	public HttpResponseRawResult post(String url) {
+		return exec(new HttpPost(url));
 	}
 
 	/**
@@ -191,7 +188,7 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data) {
+	public HttpResponseRawResult post(String url, String data) {
 		return post(url, data, null);
 	}
 
@@ -204,10 +201,10 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
+	public HttpResponseRawResult post(String url, String data, HttpHeader header) {
 		HttpPost httpPost = new HttpPost(url);
 
-		if (StringUtil.isNotEmpty(data)) {
+		if (HttpUtils.isNotEmpty(data)) {
 			StringEntity entity = new StringEntity(data, Constants.DEFAULT_ENCODING);
 			entity.setContentEncoding(Constants.DEFAULT_ENCODING.displayName());
 			entity.setContentType(Constants.CONTENT_TYPE_JSON);
@@ -229,7 +226,7 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, boolean encode) {
 		return post(url, params, null, encode);
 	}
 
@@ -243,7 +240,7 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		HttpPost httpPost = new HttpPost(url);
 
 		if (MapUtil.isNotEmpty(params)) {

@@ -58,24 +58,21 @@
       <version>${okhttp3.version}</version>
       <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient</artifactId>
       <version>${httpclient.version}</version>
       <optional>true</optional>
     </dependency>
+
     <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-http</artifactId>
       <version>${hutool.version}</version>
       <optional>true</optional>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.13.2</version>
-      <scope>test</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -202,23 +199,7 @@
     </pluginManagement>
   </build>
 
-  <repositories>
-    <!--阿里云私服-->
-    <repository>
-      <id>aliyun</id>
-      <name>aliyun</name>
-      <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-    </repository>
-  </repositories>
 
-  <pluginRepositories>
-    <!--阿里云私服-->
-    <pluginRepository>
-      <id>aliyun</id>
-      <name>aliyun</name>
-      <url>http://maven.aliyun.com/nexus/content/groups/public</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <profiles>
     <profile>

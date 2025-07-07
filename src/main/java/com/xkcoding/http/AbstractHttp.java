@@ -1,5 +1,7 @@
 package com.xkcoding.http;
 
+import com.xkcoding.http.model.HttpConfig;
+
 /**
  * HTTP 抽象类
  */

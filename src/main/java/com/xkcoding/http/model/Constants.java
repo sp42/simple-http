@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http;
+package com.xkcoding.http.model;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -60,5 +60,4 @@ public interface Constants {
 	 * 空字符串
 	 */
 	String EMPTY = "";
-
 }

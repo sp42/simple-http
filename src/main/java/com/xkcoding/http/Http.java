@@ -16,6 +16,9 @@
 
 package com.xkcoding.http;
 
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
+
 import java.util.Map;
 
 /**
@@ -28,7 +31,7 @@ public interface Http {
 	 * @param url URL
 	 * @return 结果
 	 */
-	SimpleHttpResponse get(String url);
+	HttpResponseRawResult get(String url);
 
 	/**
 	 * GET 请求
@@ -38,7 +41,7 @@ public interface Http {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	SimpleHttpResponse get(String url, Map<String, String> params, boolean encode);
+	HttpResponseRawResult get(String url, Map<String, String> params, boolean encode);
 
 	/**
 	 * GET 请求
@@ -49,7 +52,7 @@ public interface Http {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode);
+	HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode);
 
 	/**
 	 * POST 请求
@@ -57,7 +60,7 @@ public interface Http {
 	 * @param url URL
 	 * @return 结果
 	 */
-	SimpleHttpResponse post(String url);
+	HttpResponseRawResult post(String url);
 
 	/**
 	 * POST 请求
@@ -66,7 +69,7 @@ public interface Http {
 	 * @param data JSON 参数
 	 * @return 结果
 	 */
-	SimpleHttpResponse post(String url, String data);
+	HttpResponseRawResult post(String url, String data);
 
 	/**
 	 * POST 请求
@@ -76,7 +79,7 @@ public interface Http {
 	 * @param header 请求头
 	 * @return 结果
 	 */
-	SimpleHttpResponse post(String url, String data, HttpHeader header);
+	HttpResponseRawResult post(String url, String data, HttpHeader header);
 
 	/**
 	 * POST 请求
@@ -86,7 +89,7 @@ public interface Http {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	SimpleHttpResponse post(String url, Map<String, String> params, boolean encode);
+	HttpResponseRawResult post(String url, Map<String, String> params, boolean encode);
 
 	/**
 	 * POST 请求
@@ -97,5 +100,5 @@ public interface Http {
 	 * @param encode 是否需要 url encode
 	 * @return 结果
 	 */
-	SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode);
+	HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode);
 }

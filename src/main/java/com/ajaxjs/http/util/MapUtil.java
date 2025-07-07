@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package com.xkcoding.http.util;
+package com.ajaxjs.http.util;
 
-import com.xkcoding.http.Constants;
+import com.xkcoding.http.model.Constants;
 import lombok.experimental.UtilityClass;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
- * <p>
  * Map 工具类
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2019/12/24 21:07
  */
 @UtilityClass
 public class MapUtil {
@@ -61,12 +56,13 @@ public class MapUtil {
 	 * @param <V>    map值泛型
 	 */
 	public <K, V> void forEach(Map<K, V> map, BiConsumer<? super K, ? super V> action) {
-		if (isEmpty(map) || action == null) {
+		if (isEmpty(map) || action == null)
 			return;
-		}
+
 		for (Map.Entry<K, V> entry : map.entrySet()) {
 			K k;
 			V v;
+
 			try {
 				k = entry.getKey();
 				v = entry.getValue();
@@ -74,6 +70,7 @@ public class MapUtil {
 				// this usually means the entry is no longer in the map.
 				throw new ConcurrentModificationException(ise);
 			}
+
 			action.accept(k, v);
 		}
 	}
@@ -87,13 +84,15 @@ public class MapUtil {
 	 */
 	public String parseMapToString(Map<String, String> params, boolean encode) {
 		List<String> paramList = new ArrayList<>();
+
 		forEach(params, (k, v) -> {
 			if (v == null) {
 				paramList.add(k + "=");
 			} else {
-				paramList.add(k + "=" + (encode ? UrlUtil.urlEncode(v) : v));
+				paramList.add(k + "=" + (encode ? HttpUtils.urlEncode(v) : v));
 			}
 		});
+
 		return String.join("&", paramList);
 	}
 
@@ -108,9 +107,8 @@ public class MapUtil {
 		str = preProcess(str);
 
 		Map<String, String> params = new HashMap<>(16);
-		if (StringUtil.isEmpty(str)) {
+		if (HttpUtils.isEmpty(str))
 			return params;
-		}
 
 		if (!str.contains("&")) {
 			params.put(decode(str, decode), Constants.EMPTY);
@@ -125,39 +123,39 @@ public class MapUtil {
 		int i;
 		// 当前字符
 		char c;
+
 		for (i = 0; i < len; i++) {
 			c = str.charAt(i);
 			// 键值对的分界点
 			if (c == '=') {
-				if (null == name) {
+				if (null == name)
 					// name可以是""
 					name = str.substring(pos, i);
-				}
+
 				pos = i + 1;
 			}
 			// 参数对的分界点
 			else if (c == '&') {
-				if (null == name && pos != i) {
+				if (null == name && pos != i)
 					// 对于像&a&这类无参数值的字符串，我们将name为a的值设为""
 					addParam(params, str.substring(pos, i), Constants.EMPTY, decode);
-				} else if (name != null) {
+				else if (name != null) {
 					addParam(params, name, str.substring(pos, i), decode);
 					name = null;
 				}
+
 				pos = i + 1;
 			}
 		}
 
 		// 处理结尾
 		if (pos != i) {
-			if (name == null) {
+			if (name == null)
 				addParam(params, str.substring(pos, i), Constants.EMPTY, decode);
-			} else {
+			else
 				addParam(params, name, str.substring(pos, i), decode);
-			}
-		} else if (name != null) {
+		} else if (name != null)
 			addParam(params, name, Constants.EMPTY, decode);
-		}
 
 		return params;
 	}
@@ -165,33 +163,30 @@ public class MapUtil {
 	private void addParam(Map<String, String> params, String key, String value, boolean decode) {
 		key = decode(key, decode);
 		value = decode(value, decode);
-		if (params.containsKey(key)) {
+
+		if (params.containsKey(key))
 			params.put(key, params.get(key) + "," + value);
-		} else {
+		else
 			params.put(key, value);
-		}
 	}
 
 	private String decode(String str, boolean decode) {
-		return decode ? UrlUtil.urlDecode(str) : str;
+		return decode ? HttpUtils.urlDecode(str) : str;
 	}
 
-
 	private String preProcess(String str) {
-		if (StringUtil.isEmpty(str)) {
+		if (HttpUtils.isEmpty(str))
 			return str;
-		}
+
 		// 去除 URL 路径信息
 		int beginPos = str.indexOf("?");
-		if (beginPos > -1) {
+		if (beginPos > -1)
 			str = str.substring(beginPos + 1);
-		}
 
 		// 去除 # 后面的内容
 		int endPos = str.indexOf("#");
-		if (endPos > -1) {
+		if (endPos > -1)
 			str = str.substring(0, endPos);
-		}
 
 		return str;
 	}

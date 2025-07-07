@@ -1,6 +1,6 @@
 package com.xkcoding.http.support.java11;
 
-import com.xkcoding.http.HttpConfig;
+import com.xkcoding.http.model.HttpConfig;
 import com.xkcoding.http.SimpleHttpException;
 
 import java.io.IOException;
@@ -12,15 +12,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * <p>
  * 默认代理选择器
- * </p>
- *
- * @author yangkai.shen
- * @date Created in 2020-04-29 15:59
  */
 public class DefaultProxySelector extends ProxySelector {
-	private HttpConfig httpConfig;
+	private final HttpConfig httpConfig;
 
 	public DefaultProxySelector(HttpConfig httpConfig) {
 		this.httpConfig = httpConfig;

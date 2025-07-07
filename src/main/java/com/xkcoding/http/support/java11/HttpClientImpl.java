@@ -16,13 +16,13 @@
 
 package com.xkcoding.http.support.java11;
 
-import com.xkcoding.http.HttpConfig;
-import com.xkcoding.http.Constants;
-import com.xkcoding.http.AbstractHttp;
-import com.xkcoding.http.HttpHeader;
-import com.xkcoding.http.SimpleHttpResponse;
-import com.xkcoding.http.util.MapUtil;
-import com.xkcoding.http.util.StringUtil;
+import com.ajaxjs.http.util.HttpUtils;
+import com.xkcoding.http.*;
+import com.xkcoding.http.model.Constants;
+import com.xkcoding.http.model.HttpConfig;
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
+import com.ajaxjs.http.util.MapUtil;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -53,16 +53,16 @@ public class HttpClientImpl extends AbstractHttp {
 		this.clientBuilder = clientBuilder;
 	}
 
-	private SimpleHttpResponse exec(HttpRequest.Builder builder) {
+	private HttpResponseRawResult exec(HttpRequest.Builder builder) {
 		this.addHeader(builder);
 		try {
 			HttpClient client;
 
-			if (null != httpConfig.getProxy()) {
+			if (null != httpConfig.getProxy())
 				client = clientBuilder.connectTimeout(Duration.ofMillis(httpConfig.getTimeout())).proxy(new DefaultProxySelector(httpConfig)).build();
-			} else {
+			else
 				client = clientBuilder.connectTimeout(Duration.ofMillis(httpConfig.getTimeout())).build();
-			}
+
 			HttpRequest request = builder.build();
 			HttpResponse<String> httpResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -70,17 +70,18 @@ public class HttpClientImpl extends AbstractHttp {
 			boolean successful = isSuccess(httpResponse);
 			Map<String, List<String>> headers = httpResponse.headers().map();
 			String body = httpResponse.body();
-			return new SimpleHttpResponse(successful, code, headers, body, null);
+
+			return new HttpResponseRawResult(successful, code, headers, body, null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new SimpleHttpResponse(false, 500, null, null, e.getMessage());
+			return new HttpResponseRawResult(false, 500, null, null, e.getMessage());
 		}
 	}
 
 	private boolean isSuccess(HttpResponse<String> response) {
-		if (response == null) {
+		if (response == null)
 			return false;
-		}
+
 		return response.statusCode() >= 200 && response.statusCode() < 300;
 	}
 
@@ -100,8 +101,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url) {
-		return this.get(url, null, false);
+	public HttpResponseRawResult get(String url) {
+		return get(url, null, false);
 	}
 
 	/**
@@ -113,8 +114,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, boolean encode) {
-		return this.get(url, params, null, encode);
+	public HttpResponseRawResult get(String url, Map<String, String> params, boolean encode) {
+		return get(url, params, null, encode);
 	}
 
 	/**
@@ -127,15 +128,14 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
-		String baseUrl = StringUtil.appendIfNotContain(url, "?", "&");
+	public HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+		String baseUrl = HttpUtils.appendIfNotContain(url, "?", "&");
 		String reqUrl = baseUrl + MapUtil.parseMapToString(params, encode);
 
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(reqUrl)).GET().timeout(Duration.ofMillis(httpConfig.getTimeout()));
 
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), builder::header);
-		}
 
 		return exec(builder);
 	}
@@ -147,8 +147,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url) {
-		return this.post(url, null);
+	public HttpResponseRawResult post(String url) {
+		return post(url, null);
 	}
 
 	/**
@@ -159,8 +159,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data) {
-		return this.post(url, data, null);
+	public HttpResponseRawResult post(String url, String data) {
+		return post(url, data, null);
 	}
 
 	/**
@@ -172,22 +172,20 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
+	public HttpResponseRawResult post(String url, String data, HttpHeader header) {
 		HttpRequest.Builder builder = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofMillis(httpConfig.getTimeout()));
 
-		if (StringUtil.isNotEmpty(data)) {
+		if (HttpUtils.isNotEmpty(data)) {
 			builder.POST(HttpRequest.BodyPublishers.ofString(data, Constants.DEFAULT_ENCODING));
 			builder.header(Constants.CONTENT_ENCODING, Constants.DEFAULT_ENCODING.displayName());
 			builder.header(Constants.CONTENT_TYPE, Constants.CONTENT_TYPE_JSON);
-		} else {
+		} else
 			builder.POST(HttpRequest.BodyPublishers.noBody());
-		}
 
-		if (header != null) {
+		if (header != null)
 			MapUtil.forEach(header.getHeaders(), builder::header);
-		}
 
-		return this.exec(builder);
+		return exec(builder);
 	}
 
 	/**
@@ -199,8 +197,8 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
-		return this.post(url, params, null, encode);
+	public HttpResponseRawResult post(String url, Map<String, String> params, boolean encode) {
+		return post(url, params, null, encode);
 	}
 
 	/**
@@ -213,9 +211,10 @@ public class HttpClientImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
-		String baseUrl = StringUtil.appendIfNotContain(url, "?", "&");
+	public HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+		String baseUrl = HttpUtils.appendIfNotContain(url, "?", "&");
 		String reqUrl = baseUrl + MapUtil.parseMapToString(params, encode);
-		return this.post(reqUrl, null, header);
+
+		return post(reqUrl, null, header);
 	}
 }

@@ -18,13 +18,12 @@ package com.xkcoding.http.support;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import com.xkcoding.http.HttpConfig;
+import com.ajaxjs.http.util.HttpUtils;
 import com.xkcoding.http.AbstractHttp;
-import com.xkcoding.http.HttpHeader;
-import com.xkcoding.http.SimpleHttpResponse;
-import com.xkcoding.http.util.MapUtil;
-import com.xkcoding.http.util.StringUtil;
-import com.xkcoding.http.util.UrlUtil;
+import com.xkcoding.http.model.HttpConfig;
+import com.xkcoding.http.model.HttpHeader;
+import com.xkcoding.http.model.HttpResponseRawResult;
+import com.ajaxjs.http.util.MapUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class HutoolImpl extends AbstractHttp {
 		super(httpConfig);
 	}
 
-	private SimpleHttpResponse exec(HttpRequest request) {
+	private HttpResponseRawResult exec(HttpRequest request) {
 		// 设置超时时长
 		request = request.timeout(httpConfig.getTimeout());
 		// 设置代理
@@ -54,10 +53,10 @@ public class HutoolImpl extends AbstractHttp {
 			String body = response.body();
 			Map<String, List<String>> headers = response.headers();
 
-			return new SimpleHttpResponse(successful, code, headers, body, null);
+			return new HttpResponseRawResult(successful, code, headers, body, null);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new SimpleHttpResponse(false, 500, null, null, e.getMessage());
+			return new HttpResponseRawResult(false, 500, null, null, e.getMessage());
 		}
 	}
 
@@ -68,7 +67,7 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url) {
+	public HttpResponseRawResult get(String url) {
 		return get(url, null, false);
 	}
 
@@ -81,7 +80,7 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, boolean encode) {
+	public HttpResponseRawResult get(String url, Map<String, String> params, boolean encode) {
 		return get(url, params, null, encode);
 	}
 
@@ -95,8 +94,8 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
-		String baseUrl = StringUtil.appendIfNotContain(url, "?", "&");
+	public HttpResponseRawResult get(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+		String baseUrl = HttpUtils.appendIfNotContain(url, "?", "&");
 		url = baseUrl + MapUtil.parseMapToString(params, encode);
 		HttpRequest request = HttpRequest.get(url);
 
@@ -113,9 +112,9 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url) {
+	public HttpResponseRawResult post(String url) {
 		HttpRequest request = HttpRequest.post(url);
-		return this.exec(request);
+		return exec(request);
 	}
 
 	/**
@@ -126,8 +125,8 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data) {
-		return this.post(url, data, null);
+	public HttpResponseRawResult post(String url, String data) {
+		return post(url, data, null);
 	}
 
 	/**
@@ -139,16 +138,16 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, String data, HttpHeader header) {
+	public HttpResponseRawResult post(String url, String data, HttpHeader header) {
 		HttpRequest request = HttpRequest.post(url);
 
-		if (StringUtil.isNotEmpty(data))
+		if (HttpUtils.isNotEmpty(data))
 			request.body(data);
 
 		if (header != null)
 			MapUtil.forEach(header.getHeaders(), request::header);
 
-		return this.exec(request);
+		return exec(request);
 	}
 
 	/**
@@ -160,8 +159,8 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, boolean encode) {
-		return this.post(url, params, null, encode);
+	public HttpResponseRawResult post(String url, Map<String, String> params, boolean encode) {
+		return post(url, params, null, encode);
 	}
 
 	/**
@@ -174,17 +173,17 @@ public class HutoolImpl extends AbstractHttp {
 	 * @return 结果
 	 */
 	@Override
-	public SimpleHttpResponse post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
+	public HttpResponseRawResult post(String url, Map<String, String> params, HttpHeader header, boolean encode) {
 		HttpRequest request = HttpRequest.post(url);
 
 		if (encode)
-			MapUtil.forEach(params, (k, v) -> request.form(k, UrlUtil.urlEncode(v)));
-		 else
+			MapUtil.forEach(params, (k, v) -> request.form(k, HttpUtils.urlEncode(v)));
+		else
 			MapUtil.forEach(params, request::form);
 
 		if (header != null)
 			MapUtil.forEach(header.getHeaders(), request::header);
 
-		return this.exec(request);
+		return exec(request);
 	}
 }

@@ -12,6 +12,7 @@
 > 抽取一个简单 HTTP 的通用接口，底层实现根据具体引入依赖指定。
 
 ```xml
+
 <dependency>
   <groupId>com.xkcoding.http</groupId>
   <artifactId>simple-http</artifactId>
@@ -24,18 +25,21 @@
 - 默认会按照下面的优先级自行寻找底层实现，`java 11 HttpClient -> OkHttp3 -> apache HttpClient -> hutool-http`
 - 也可以自行实现 `com.xkcoding.http.Http` 接口，通过 `HttpUtil.setHttp(new MyHttpImpl())` 设置进来
 - 可以配置超时时间及代理
+
 ```java
 HttpUtil.setConfig(HttpConfig.builder()
-			.timeout(Constants.DEFAULT_TIMEOUT)
-			.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("127.0.0.1", 10080)))
-			.build());
-SimpleHttpResponse response = HttpUtil.get("https://www.google.com");
-System.out.println("code = " + response.getCode());
-System.out.println("body = " + response.getBody());
+  .timeout(Constants.DEFAULT_TIMEOUT)
+  .proxy(new Proxy(Proxy.Type.HTTP,new InetSocketAddress("127.0.0.1",10080)))
+  .build());
+  SimpleHttpResponse response=HttpUtil.get("https://www.google.com");
+  System.out.println("code = "+response.getCode());
+  System.out.println("body = "+response.getBody());
 ```
 
 ## TODO
 
-- [x] ~~集成 JDK11 的 HTTPClient~~(感谢[@春哥](https://github.com/ChunMengLu)的 [PR#1](https://github.com/xkcoding/simple-http/pull/1))
+- [x] ~~集成 JDK11 的 HTTPClient~~(感谢[@春哥](https://github.com/ChunMengLu)
+  的 [PR#1](https://github.com/xkcoding/simple-http/pull/1))
 - [x] ~~支持代理~~(感谢[@亚东](https://github.com/zhangyd-c)的 [PR#7](https://github.com/xkcoding/simple-http/pull/7))
-- [x] ~~Response 封装~~(感谢[@小海](https://github.com/Mvbbb)的 [PR#11](https://github.com/xkcoding/simple-http/pull/11))
+- [x] ~~Response 封装~~(感谢[@小海](https://github.com/Mvbbb)
+  的 [PR#11](https://github.com/xkcoding/simple-http/pull/11))
