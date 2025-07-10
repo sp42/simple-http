@@ -16,6 +16,7 @@
 
 package com.ajaxjs.http.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xkcoding.http.model.Constants;
 import lombok.experimental.UtilityClass;
 
@@ -27,6 +28,12 @@ import java.util.function.BiConsumer;
  */
 @UtilityClass
 public class MapUtil {
+	public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	public static Map<String, Object> bean2map(Object bean) {
+		return OBJECT_MAPPER.convertValue(bean, Map.class);
+	}
+
 	/**
 	 * 判断 map 不为空
 	 *
@@ -86,11 +93,13 @@ public class MapUtil {
 		List<String> paramList = new ArrayList<>();
 
 		forEach(params, (k, v) -> {
-			if (v == null) {
+			if (encode)
+				k = HttpUtils.urlEncode(k);
+
+			if (v == null)
 				paramList.add(k + "=");
-			} else {
+			else
 				paramList.add(k + "=" + (encode ? HttpUtils.urlEncode(v) : v));
-			}
 		});
 
 		return String.join("&", paramList);

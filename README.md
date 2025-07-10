@@ -11,6 +11,11 @@
 
 https://xkcoding.com/2019/12/26/xkcoding-simple-http.html
 
+- 支持声明式调用和编程式调用
+  - 通过精妙的设计呈现灵活、自用、简单的 API 调用
+  - 提供类似 OpenFeign 基于接口与注解的调用方式
+- 底层实现支持 JDK11 的 HTTPClient、OkHttp3、Apache HttpClient、Hutool Http
+
 > 抽取一个简单 HTTP 的通用接口，底层实现根据具体引入依赖指定。
 
 ```xml
